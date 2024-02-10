@@ -10,16 +10,45 @@ public class Book extends Main{
     private int year_of_publication;
     private String type;
     private int number_of_readers;
+    private float price;
+    private boolean has_a_price;
     private ArrayList<Book> books = new ArrayList<>();
 
-    public Book(int number, String name, int year_of_publication, String type, int number_of_readers) {
+    public Book(int number, String name, int year_of_publication, String type, int number_of_readers,float price,boolean has_a_price) {
         this.number = number;
         this.name = name;
         this.year_of_publication = year_of_publication;
         this.type = type;
         this.books = books;
         this.number_of_readers = number_of_readers;
+        this.has_a_price = has_a_price;
+        this.price = price;
     }
+
+    public int getNumber_of_readers() {
+        return number_of_readers;
+    }
+
+    public float getPrice() {
+        return price;
+    }
+
+    public boolean isHas_a_price() {
+        return has_a_price;
+    }
+
+    public void setNumber_of_readers(int number_of_readers) {
+        this.number_of_readers = number_of_readers;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
+    }
+
+    public void setHas_a_price(boolean has_a_price) {
+        this.has_a_price = has_a_price;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -47,6 +76,8 @@ public class Book extends Main{
     public String getType() {
         return type;
     }
+
+
     @Override
     public void deleteElement(int number) throws SQLException {
         Connection conn = null;
@@ -61,7 +92,7 @@ public class Book extends Main{
     }
 
 
-
+//Add free book
     @Override
     public void addElement() throws SQLException {
         Scanner scanner = new Scanner(System.in);
@@ -84,28 +115,36 @@ public class Book extends Main{
     }
 
 
-
+//Take book
     public void takeBook(int number, User user) throws SQLException {
-        Connection conn = null;
         Scanner sc = new Scanner(System.in);
         System.out.println("Please, enter your email again: ");
         String email = sc.nextLine();
+
+        Connection conn = null;
         try {
             conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/library", "postgres", "keklolloh123");
             String selectSqlBook = "SELECT name, number_of_readers FROM public.\"books\" WHERE number = ?";
             PreparedStatement selectStmt = conn.prepareStatement(selectSqlBook);
             selectStmt.setInt(1, number);
             ResultSet rs = selectStmt.executeQuery();
+
+
             String selectSqlUser = "SELECT name,id FROM public.\"user\" WHERE email = ?";
             PreparedStatement selectStmtUser = conn.prepareStatement(selectSqlUser);
             selectStmtUser.setString(1, email);
             ResultSet rs1 = selectStmtUser.executeQuery();
+
+
             if (rs.next()) {
+
                 String bookName = rs.getString("name");
                 int currentReaders = rs.getInt("number_of_readers");
                 currentReaders++;
+
                 String userName = "";
                 int userId = 0;
+
                 if (rs1.next()) {
                     userName = rs1.getString("name");
                     userId = rs1.getInt("id");
@@ -113,14 +152,17 @@ public class Book extends Main{
                     System.out.println("User with email " + email + " not found.");
                     return;
                 }
+
                 String insertSql = "INSERT INTO public.\"taken_books\" (number, book_name, user_name,user_id) VALUES (?, ?, ?, ?)";
                 PreparedStatement insertStmt = conn.prepareStatement(insertSql);
+
                 insertStmt.setInt(1, number);
                 insertStmt.setString(2, bookName);
                 insertStmt.setString(3, userName);
                 insertStmt.setInt(4, userId);
                 insertStmt.executeUpdate();
                 System.out.println("Book '" + bookName + "' with number " + number + " was taken by user '" + userName + "'.");
+
                 String updateSql = "UPDATE public.\"books\" SET number_of_readers = ? WHERE number = ?";
                 PreparedStatement updateStmt = conn.prepareStatement(updateSql);
                 updateStmt.setInt(1, currentReaders);
@@ -138,6 +180,10 @@ public class Book extends Main{
         }
     }
 
+    public void addBookWithPrice(){
+
+    }
+
 
 
     public void showRating() throws SQLException {
@@ -151,8 +197,7 @@ public class Book extends Main{
             int year_of_pub = rs.getInt("year_of_publication");
             String type = rs.getString("type");
             int number_of_readers = rs.getInt("number_of_readers");
-
-            Book book = new Book(number, name, year_of_pub, type, number_of_readers);
+            Book book = new Book(number, name, year_of_pub, type, number_of_readers,price,has_a_price);
             books.add(book);
         }
         int i = 0 ;
@@ -165,8 +210,175 @@ public class Book extends Main{
         }
     }
 
+    public void buyBook(int number) throws SQLException {
+        Scanner sc = null;
+        Connection conn = null;
+        PreparedStatement stmt1 = null, stmt2 = null, insertStmt = null, updateStmt1 = null, updateStmt2 = null;
+        ResultSet rs1 = null, rs2 = null;
+
+        try {
+            sc = new Scanner(System.in);
+            System.out.println("Write your email: ");
+            String email = sc.nextLine();
+
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/library", "postgres", "keklolloh123");
+
+
+
+            String sql1 = "SELECT number, name, has_a_price, price FROM public.books WHERE number = ?";
+            stmt1 = conn.prepareStatement(sql1);
+            stmt1.setInt(1, number);
+            rs1 = stmt1.executeQuery();
+
+            String selectSqlUser = "SELECT name,id,balance FROM public.\"user\" WHERE email = ?";
+            PreparedStatement selectStmtUser = conn.prepareStatement(selectSqlUser);
+            selectStmtUser.setString(1, email);
+            rs2 = selectStmtUser.executeQuery();
+
+            if (rs1.next() && rs2.next()) {
+                int bookNumber = rs1.getInt("number");
+                String bookName = rs1.getString("name");
+                boolean hasAPrice = rs1.getBoolean("has_a_price");
+                float bookPrice = rs1.getFloat("price");
+                int userId = rs2.getInt("id");
+                String userName = rs2.getString("name");
+                float userBalance = rs2.getFloat("balance");
+                System.out.println("gay " + userBalance + hasAPrice + bookPrice + " " + userName + " " + userId);
+                if (hasAPrice && userBalance >= bookPrice) {
+                    String insertSql = "INSERT INTO public.taken_books (number, book_name, user_name, user_id) VALUES (?, ?, ?, ?)";
+                    insertStmt = conn.prepareStatement(insertSql);
+                    insertStmt.setInt(1, bookNumber);
+                    insertStmt.setString(2, bookName);
+                    insertStmt.setString(3, userName);
+                    insertStmt.setInt(4, userId);
+                    insertStmt.executeUpdate();
+
+                    String selectSqlBook = "SELECT name, number_of_readers FROM public.\"books\" WHERE number = ?";
+                    updateStmt1 = conn.prepareStatement(selectSqlBook);
+                    updateStmt1.setInt(1, bookNumber);
+                    rs1 = updateStmt1.executeQuery();
+
+                    int currentReaders = 0;
+                    if (rs1.next()) {
+                        currentReaders = rs1.getInt("number_of_readers");
+                        currentReaders++;
+                    }
+
+                    String updateSql = "UPDATE public.\"books\" SET number_of_readers = ? WHERE number = ?";
+                    updateStmt2 = conn.prepareStatement(updateSql);
+                    updateStmt2.setInt(1, currentReaders);
+                    updateStmt2.setInt(2, bookNumber);
+                    updateStmt2.executeUpdate();
+
+                    sql1 = "UPDATE public.\"user\" SET balance = (balance - ?) WHERE email = ?";
+                    updateStmt1 = conn.prepareStatement(sql1);
+                    updateStmt1.setFloat(1, bookPrice);
+                    updateStmt1.setString(2, email);
+                    updateStmt1.executeUpdate();
+
+                    System.out.println("Book '" + bookName + "' with number " + number + " was bought.");
+                } else {
+                    if (!hasAPrice) {
+                        System.out.println("This book is free.");
+                    } else {
+                        System.out.println("You don't have enough cash!");
+                    }
+                }
+            } else {
+                if (!rs1.next()) {
+                    System.out.println("Book number " + number + " not found.");
+                } else if (!rs2.next()) {
+                    System.out.println("User with email '" + email + "' not found.");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error accessing database: " + e.getMessage());
+        }
+    }
+
+    public void addBookWithPrice(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter name of the book: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter type: ");
+        String type = scanner.nextLine();
+        System.out.print("Enter year of publication: ");
+        int year_of_publication = scanner.nextInt();
+        System.out.print("Enter price: ");
+        float price = scanner.nextFloat();
+        try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/library", "postgres", "keklolloh123")) {
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO public.\"books\" (name, year_of_publication, type, price, has_a_price) VALUES (?, ?, ?, ?, ?)");
+            stmt.setString(1, name);
+            stmt.setInt(2, year_of_publication);
+            stmt.setString(3, type);
+            stmt.setFloat(4, price);
+            stmt.setBoolean(5, true); // Set has_a_price to true for books with price
+            stmt.executeUpdate();
+            System.out.println("Book added successfully!");
+        } catch (SQLException e) {
+            System.err.println("Error adding book: " + e.getMessage());
+        }
+    }
+
+
+
+
+
+
+    public void showCatalogueOfFree() throws SQLException {
+        Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/library", "postgres", "keklolloh123");
+        String sql = "SELECT * FROM public.books " + "ORDER BY number_of_readers DESC ";
+        Statement stat = con.createStatement();
+        ResultSet rs = stat.executeQuery(sql);
+        boolean hasPrice = true;
+        if(rs.next()){
+            hasPrice = rs.getBoolean("has_a_price");
+        }
+        while (rs.next()) {
+            String name = rs.getString("name");
+            int number = rs.getInt("number");
+            int year_of_pub = rs.getInt("year_of_publication");
+            String type = rs.getString("type");
+            int number_of_readers = rs.getInt("number_of_readers");
+            float price = rs.getFloat("price");
+            Book book = new Book(number, name, year_of_pub, type, number_of_readers,price,hasPrice);
+            books.add(book);
+        }
+        for(Book book:books){
+            if(!hasPrice){
+                System.out.println("↪\uFE0E Number of readers: " + book.getNumber_of_readers() + " name: " + book.getName() + " || type: " + book.getType() + " || number: " + book.getNumber());
+            }
+        }
+    }
+
+    public void showCatalogueOfPayable() throws SQLException {
+        Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/library", "postgres", "keklolloh123");
+        String sql = "SELECT * FROM public.books WHERE has_a_price = true"; // Only select books with a price
+        Statement stat = con.createStatement();
+        ResultSet rs = stat.executeQuery(sql);
+        boolean hasPrice = true;
+
+        while (rs.next()) {
+            String name = rs.getString("name");
+            int number = rs.getInt("number");
+            int year_of_pub = rs.getInt("year_of_publication");
+            String type = rs.getString("type");
+            int number_of_readers = rs.getInt("number_of_readers");
+            float price = rs.getFloat("price");
+            Book book = new Book(number, name, year_of_pub, type, number_of_readers, price, hasPrice);
+            books.add(book);
+        }
+
+        for (Book book : books) {
+            if (book.isHas_a_price()) {
+                System.out.println("↪\uFE0E Number of readers: " + book.getNumber_of_readers() + " name: " + book.getName() + " || type: " + book.getType() + " || number: " + book.getNumber()
+                        + "|| price" + book.getPrice());
+            }
+        }
+    }
+
     @Override
     public String toString() {
-        return "↪\uFE0E Number of readers: " + number_of_readers + " name: " + name + " || type: " + type + " || number: " + number;
+        return "↪\uFE0E Number of readers: " + number_of_readers + " name: " + name + " || type: " + type + " || number: " + number + "has a price" + (has_a_price ? "Its not free" : "Its free");
     }
 }
