@@ -180,12 +180,6 @@ public class Book extends Main{
         }
     }
 
-    public void addBookWithPrice(){
-
-    }
-
-
-
     public void showRating() throws SQLException {
         Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/library", "postgres", "keklolloh123");
         String sql = "SELECT * FROM public.books " + "ORDER BY number_of_readers DESC ";
@@ -243,7 +237,6 @@ public class Book extends Main{
                 int userId = rs2.getInt("id");
                 String userName = rs2.getString("name");
                 float userBalance = rs2.getFloat("balance");
-                System.out.println("gay " + userBalance + hasAPrice + bookPrice + " " + userName + " " + userId);
                 if (hasAPrice && userBalance >= bookPrice) {
                     String insertSql = "INSERT INTO public.taken_books (number, book_name, user_name, user_id) VALUES (?, ?, ?, ?)";
                     insertStmt = conn.prepareStatement(insertSql);
@@ -321,10 +314,6 @@ public class Book extends Main{
     }
 
 
-
-
-
-
     public void showCatalogueOfFree() throws SQLException {
         Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/library", "postgres", "keklolloh123");
         String sql = "SELECT * FROM public.books " + "ORDER BY number_of_readers DESC ";
@@ -376,6 +365,96 @@ public class Book extends Main{
             }
         }
     }
+
+    public void returnBook(int number) throws SQLException{
+        Scanner sc = new Scanner(System.in);
+        System.out.println("please enter your email again: ");
+        String email = sc.nextLine();
+        Connection conn = null;
+        try {
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/library", "postgres", "keklolloh123");
+            String selectSqlTakenBook = "SELECT * FROM public.taken_books WHERE number = ?";
+            PreparedStatement selectStmt = conn.prepareStatement(selectSqlTakenBook);
+            selectStmt.setInt(1, number);
+            ResultSet rs = selectStmt.executeQuery();
+
+
+            String selectSqlUser = "SELECT * FROM public.\"user\" WHERE email = ?";
+            PreparedStatement selectStmtUser = conn.prepareStatement(selectSqlUser);
+            selectStmtUser.setString(1, email);
+            ResultSet rs1 = selectStmtUser.executeQuery();
+
+
+            if (rs.next() && rs1.next()) {
+
+                int selectnumber = rs.getInt("number");
+                String selectusername = rs1.getString("name");
+
+                String deleteSql = "DELETE FROM taken_books WHERE number = ? AND user_name = ?;";
+                PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
+
+                deleteStmt.setInt(1, selectnumber);
+                deleteStmt.setString(2, selectusername);
+                deleteStmt.executeUpdate();
+                System.out.println("Book with number " + number + " was return");
+
+
+            }else {
+                System.out.println("User with email " + email + " not found.");
+                return;
+            }
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+    public void IWANNAMONEY(float money) throws SQLException{
+        Scanner sc = null;
+        Connection conn = null;
+        PreparedStatement stmt1 = null, stmt2 = null, insertStmt = null, updateStmt1 = null, updateStmt2 = null;
+        ResultSet rs1 = null, rs2 = null;
+        try{
+            sc = new Scanner(System.in);
+            System.out.println("Write your email: ");
+            String email = sc.nextLine();
+
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/library", "postgres", "keklolloh123");
+
+
+
+            String selectbalance = "SELECT name,id,balance FROM public.\"user\" WHERE email = ?";
+            PreparedStatement updatebalance = conn.prepareStatement(selectbalance);
+            updatebalance.setString(1, email);
+            rs2 = updatebalance.executeQuery();
+
+            selectbalance = "UPDATE public.\"user\" SET balance = (balance + ?) WHERE email = ?";
+            updateStmt1 = conn.prepareStatement(selectbalance);
+            updateStmt1.setFloat(1, money);
+            updateStmt1.setString(2, email);
+            updateStmt1.executeUpdate();
+            System.out.println("Money has been putted in successful");
+
+        }catch (SQLException e) {
+            System.err.println("Error accessing database: " + e.getMessage());
+        }
+    }
+    public void showTakenBooks() throws SQLException {
+        Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/library", "postgres", "keklolloh123");
+
+        String sql = "SELECT * FROM public.\"taken_books\" ORDER BY id";
+        Statement stat = conn.createStatement();
+
+        ResultSet rs = stat.executeQuery(sql);
+        while (rs.next()) {
+            int id = rs.getInt("id");
+            int number = rs.getInt("number");
+            String book_name = rs.getString("book_name");
+            String user_name = rs.getString("user_name");
+            int user_id = rs.getInt("user_id");
+
+            TakenBooks takenBooks = new TakenBooks();
+        }
+    }
+
 
     @Override
     public String toString() {
