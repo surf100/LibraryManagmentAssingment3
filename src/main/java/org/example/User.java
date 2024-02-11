@@ -11,15 +11,25 @@ public class User extends Main{
     private boolean status;
     private String email;
     private String password;
+    private float balance;
     private ArrayList<User> users = new ArrayList<>();
 
-    public User(int id, String name, String surname, boolean status, String email, String password) {
+    public User(int id, String name, String surname, boolean status, String email, String password,float balance) {
         this.id = id;
         this.name = name;
         this.surname = surname;
         this.status = status;
         this.email = email;
         this.password = password;
+        this.balance = balance;
+    }
+
+    public float getBalance() {
+        return balance;
+    }
+
+    public void setBalance(float balance) {
+        this.balance = balance;
     }
 
     public void setName(String name) {
@@ -130,4 +140,5 @@ public class User extends Main{
                 ", password='" + password + "'";
     }
 }
+
 
