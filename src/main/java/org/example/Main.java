@@ -112,6 +112,16 @@ public abstract class Main {
                             int n = sc.nextInt();
                             book.buyBook(n);
                         }
+                        else if(temp==3){
+                            System.out.println("Write amount который закинуть хочешь:");
+                            float money = sc.nextFloat();
+                            book.IWANNAMONEY(money);
+                        }
+                        else if(temp==4){
+                            System.out.println("Write number of the book that u want to return: ");
+                            int number = sc.nextInt();
+                            book.returnBook(number);
+                        }
 
 
                     }else {
@@ -126,11 +136,17 @@ public abstract class Main {
                             System.out.println("Here is top 10 books of our web - service: ");
                             book.showRating();
                         } else if (temp==1) {
-                            System.out.println("Add charachteristics of book that u want to add: ");
+                            System.out.println("Add charachteristics of free book that u want to add: ");
                             book.addElement();
+                        } else if (temp==2) {
+                            System.out.println("Add charachteristics of buyable book that u want to add: ");
+                            book.addBookWithPrice();
                         }
-
-                        //Add book with price
+                        else if(temp==3) {
+                            System.out.println("Write amount который закинуть хочешь:");
+                            float money = sc.nextFloat();
+                            book.IWANNAMONEY(money);
+                        }
                     }
                 }catch (Exception e) {
                     System.out.println("Book already exist" + e.getMessage());
@@ -169,8 +185,9 @@ public abstract class Main {
                             System.out.println("Chose one of the options: \n" +
                                     "0.Top 10 books \n" +
                                     "1.Take book \n" +
-                                    "2.Buy book \n +" +
-                                    "3.Top up your balance");
+                                    "2.Buy book \n " +
+                                    "3.Top up your balance\n" +
+                                    "4.Return book");
                             int temp = sc.nextInt();
 
                             if(temp==1){
@@ -188,6 +205,17 @@ public abstract class Main {
                                 System.out.println("Choose the number of book that u want to buy: ");
                                 int n = sc.nextInt();
                                 book.buyBook(n);
+                            }
+                            else if(temp==3){
+                                System.out.println("Write amount который закинуть хочешь:");
+                                float money = sc.nextFloat();
+                                book.IWANNAMONEY(money);
+                            }
+                            else if(temp==4){
+                                System.out.println("Write number of the book that u want to return: ");
+
+                                int number = sc.nextInt();
+                                book.returnBook(number);
                             }
 
                         } else if (!userStatus) {
@@ -208,11 +236,11 @@ public abstract class Main {
                                 System.out.println("Add charachteristics of buyable book that u want to add: ");
                                 book.addBookWithPrice();
                             }
-
-                            //AddBookWithPrice
-                            //пополнить баланс
-                            
-
+                            else if(temp==3) {
+                                System.out.println("Write amount который закинуть хочешь:");
+                                float money = sc.nextFloat();
+                                book.IWANNAMONEY(money);
+                            }
                         }
                     }
                 } catch (SQLException e) {
