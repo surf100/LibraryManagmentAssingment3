@@ -92,7 +92,7 @@ public class Book extends Main{
     }
 
 
-//Add free book
+    //Add free book
     @Override
     public void addElement() throws SQLException {
         Scanner scanner = new Scanner(System.in);
@@ -115,7 +115,7 @@ public class Book extends Main{
     }
 
 
-//Take book
+    //Take book
     public void takeBook(int number, User user) throws SQLException {
         Scanner sc = new Scanner(System.in);
         System.out.println("Please, enter your email again: ");
@@ -305,7 +305,7 @@ public class Book extends Main{
             stmt.setInt(2, year_of_publication);
             stmt.setString(3, type);
             stmt.setFloat(4, price);
-            stmt.setBoolean(5, true); // Set has_a_price to true for books with price
+            stmt.setBoolean(5, true);
             stmt.executeUpdate();
             System.out.println("Book added successfully!");
         } catch (SQLException e) {
@@ -316,25 +316,23 @@ public class Book extends Main{
 
     public void showCatalogueOfFree() throws SQLException {
         Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/library", "postgres", "keklolloh123");
-        String sql = "SELECT * FROM public.books " + "ORDER BY number_of_readers DESC ";
+        String sql = "SELECT * FROM public.books WHERE has_a_price = false";
         Statement stat = con.createStatement();
         ResultSet rs = stat.executeQuery(sql);
-        boolean hasPrice = true;
-        if(rs.next()){
-            hasPrice = rs.getBoolean("has_a_price");
-        }
+        boolean hasPrice = false;
+
         while (rs.next()) {
             String name = rs.getString("name");
             int number = rs.getInt("number");
             int year_of_pub = rs.getInt("year_of_publication");
             String type = rs.getString("type");
             int number_of_readers = rs.getInt("number_of_readers");
-            float price = rs.getFloat("price");
-            Book book = new Book(number, name, year_of_pub, type, number_of_readers,price,hasPrice);
+            Book book = new Book(number, name, year_of_pub, type, number_of_readers, price, hasPrice);
             books.add(book);
         }
-        for(Book book:books){
-            if(!hasPrice){
+
+        for (Book book : books) {
+            if (!book.isHas_a_price()) {
                 System.out.println("↪\uFE0E Number of readers: " + book.getNumber_of_readers() + " name: " + book.getName() + " || type: " + book.getType() + " || number: " + book.getNumber());
             }
         }
@@ -342,7 +340,7 @@ public class Book extends Main{
 
     public void showCatalogueOfPayable() throws SQLException {
         Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/library", "postgres", "keklolloh123");
-        String sql = "SELECT * FROM public.books WHERE has_a_price = true"; // Only select books with a price
+        String sql = "SELECT * FROM public.books WHERE has_a_price = true";
         Statement stat = con.createStatement();
         ResultSet rs = stat.executeQuery(sql);
         boolean hasPrice = true;
@@ -437,6 +435,7 @@ public class Book extends Main{
             System.err.println("Error accessing database: " + e.getMessage());
         }
     }
+
     public void showTakenBooks() throws SQLException {
         Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/library", "postgres", "keklolloh123");
 
