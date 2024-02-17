@@ -1,9 +1,10 @@
 package org.example;
 
+import lombok.AllArgsConstructor;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
-
 public class User extends Main{
     private int id;
     private String name;
@@ -93,16 +94,50 @@ public class User extends Main{
     @Override
     public void addElement() throws SQLException {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter name: ");
+
+        System.out.print("Enter your name: ");
         String name = scanner.nextLine();
-        System.out.print("Enter surname: ");
+        while(!name.matches("[a-zA-Z]+\\.?")){
+            System.out.println("It should only contain letters,enter your name again: ");
+            name = scanner.nextLine();
+        }
+
+        System.out.print("Enter your surname: ");
         String surname = scanner.nextLine();
-        System.out.print("Enter email: ");
+        while(!surname.matches("[a-zA-Z]+\\.?")){
+            System.out.println("It should only contain letters,enter your surname again: ");
+            surname = scanner.nextLine();
+        }
+
+        System.out.print("Enter your email: ");
         String email = scanner.nextLine();
-        System.out.print("Enter password: ");
+        while(!email.matches("\\b[\\w.%-]+@[-.\\w]+\\.[A-Za-z]{2,4}\\b")){
+            System.out.println("Wrong email,enter your email again: ");
+            email = scanner.nextLine();
+        }
+
+        System.out.print("Enter your password: ");
         String password = scanner.nextLine();
-        System.out.print("Enter status (true for reader, false for author): ");
-        boolean status = scanner.nextBoolean();
+        while(!password.matches("(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}")){
+            System.out.println("Wrong password,password should consist of:\n digit,lower and upper case and at least 8 symbols");
+            System.out.println("Try again:");
+            password = scanner.nextLine();
+        }
+
+        System.out.print("Enter status reader or author: ");
+        String statuss = scanner.nextLine();
+        boolean status;
+
+        while (true) {
+            if (statuss.equalsIgnoreCase("reader") || statuss.equalsIgnoreCase("author")) {
+                status = Boolean.parseBoolean(statuss);
+                break;
+            } else {
+                System.out.println("Wrong status, try again:");
+                statuss = scanner.nextLine();
+            }
+        }
+
         try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/library", "postgres", "keklolloh123")) {
             PreparedStatement stmt = conn.prepareStatement("INSERT INTO public.\"user\" (name, surname, status, email, password) VALUES (?, ?, ?, ?, ?)");
             stmt.setString(1, name);
@@ -123,7 +158,6 @@ public class User extends Main{
                 return true;
             }
         }
-        System.out.println("Incorrect data");
         return false;
     }
 
@@ -140,5 +174,3 @@ public class User extends Main{
                 ", password='" + password + "'";
     }
 }
-
-
