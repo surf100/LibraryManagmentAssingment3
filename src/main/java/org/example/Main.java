@@ -81,37 +81,55 @@ public abstract class Main {
                 boolean userStatus = users.get(users.size() - 1).isStatus();
 
                 try {
+                    int temp = 1;
                     if (userStatus) {
+                        while(temp!=5) {
+                            System.out.println("Chose one of the options: \n" +
+                                    "0.Top 10 books \n" +
+                                    "1.Take book \n" +
+                                    "2.Buy book\n" +
+                                    "3.Top up your balance\n" +
+                                    "4.Return book\n"+
+                                    "5.Exit");
+                            temp = sc.nextInt();
 
-                        System.out.println("Chose one of the options: \n" +
-                                "0.Top 10 books \n" +
-                                "1.Take book \n" +
-                                "2.Top up your balance");
-                        int temp = sc.nextInt();
-
-                        if (temp == 1) {
-                            System.out.println("Here is catalogue of books that u can take: ");
-                            book.showCatalogueOfFree();
-                            System.out.println("Write number of the book that u want to take: ");
-                            int number = sc.nextInt();
-                            book.takeBook(number, user);
-                        } else if (temp == 0) {
-                            System.out.println("Here is top 10 books of our web - service: ");
-                            book.showRating();
-                        } else if (temp == 2) {
-                            System.out.println("Write amount which u want to add:");
-                            float money = sc.nextFloat();
-                            book.IWANNAMONEY(money);
+                            if (temp == 1) {
+                                System.out.println("Here is catalogue of free books that u can take: ");
+                                book.showCatalogueOfFree();
+                                System.out.println("Write number of the book that u want to take: ");
+                                int number = sc.nextInt();
+                                book.takeBook(number, user);
+                            } else if (temp == 0) {
+                                book.showRating();
+                            } else if (temp == 2) {
+                                System.out.println("Here is catalogue of books that u can buy: ");
+                                book.showCatalogueOfPayable();
+                                System.out.println("Choose the number of book that u want to buy: ");
+                                int n = sc.nextInt();
+                                book.buyBook(n);
+                            } else if (temp == 3) {
+                                System.out.println("Write amount which u want to add");
+                                float money = sc.nextFloat();
+                                book.IWANNAMONEY(money);
+                            } else if (temp == 4) {
+                                Taken_books list = new Taken_books(1, 1, "1", "1", 1);
+                                list.ShowTaken_books();
+                                System.out.println("Write number of the book that u want to return: ");
+                                int number = sc.nextInt();
+                                book.returnBook(number);
+                            } else if (temp ==5) {
+                                break;
+                            }
                         }
-
-
                     } else {
+                        while(temp!=4){
                         System.out.println("Chose one of the options: \n" +
                                 "0.Top 10 books \n" +
                                 "1.Add free book \n" +
-                                "2.Add book with price \n" +
-                                "3.Top up your balance");
-                        int temp = sc.nextInt();
+                                "2.Add book with price\n" +
+                                "3.Top up your balance\n"+
+                                "4.Exit");
+                        temp = sc.nextInt();
 
                         if (temp == 0) {
                             System.out.println("Here is top 10 books of our web - service: ");
@@ -126,7 +144,10 @@ public abstract class Main {
                             System.out.println("Write amount which u want to add:");
                             float money = sc.nextFloat();
                             book.IWANNAMONEY(money);
+                        }else if(temp==4){
+                            break;
                         }
+                    }
                     }
                 } catch (Exception e) {
                     System.out.println("Oops! Something went wrong: " + e.getMessage());
@@ -156,49 +177,55 @@ public abstract class Main {
                         if (rs.next()) {
 
                             boolean userStatus = rs.getBoolean("status");
-
+                            int temp = 1;
                             if (userStatus) {
-                                System.out.println("Chose one of the options: \n" +
-                                        "0.Top 10 books \n" +
-                                        "1.Take book \n" +
-                                        "2.Buy book\n" +
-                                        "3.Top up your balance\n" +
-                                        "4.Return book");
-                                int temp = sc.nextInt();
+                                while (temp!=5) {
+                                    System.out.println("Chose one of the options: \n" +
+                                            "0.Top 10 books \n" +
+                                            "1.Take book \n" +
+                                            "2.Buy book\n" +
+                                            "3.Top up your balance\n" +
+                                            "4.Return book\n"+
+                                            "5.Exit");
+                                    temp = sc.nextInt();
 
-                                if (temp == 1) {
-                                    System.out.println("Here is catalogue of free books that u can take: ");
-                                    book.showCatalogueOfFree();
-                                    System.out.println("Write number of the book that u want to take: ");
-                                    int number = sc.nextInt();
-                                    book.takeBook(number, user);
-                                } else if (temp == 0) {
-                                    book.showRating();
-                                } else if (temp == 2) {
-                                    System.out.println("Here is catalogue of books that u can buy: ");
-                                    book.showCatalogueOfPayable();
-                                    System.out.println("Choose the number of book that u want to buy: ");
-                                    int n = sc.nextInt();
-                                    book.buyBook(n);
-                                } else if (temp == 3) {
-                                    System.out.println("Write amount which u want to add");
-                                    float money = sc.nextFloat();
-                                    book.IWANNAMONEY(money);
-                                } else if (temp == 4) {
-                                    Taken_books list = new Taken_books(1,1,"1","1",1);
-                                    list.ShowTaken_books();
-                                    System.out.println("Write number of the book that u want to return: ");
-                                    int number = sc.nextInt();
-                                    book.returnBook(number);
+                                    if (temp == 1) {
+                                        System.out.println("Here is catalogue of free books that u can take: ");
+                                        book.showCatalogueOfFree();
+                                        System.out.println("Write number of the book that u want to take: ");
+                                        int number = sc.nextInt();
+                                        book.takeBook(number, user);
+                                    } else if (temp == 0) {
+                                        book.showRating();
+                                    } else if (temp == 2) {
+                                        System.out.println("Here is catalogue of books that u can buy: ");
+                                        book.showCatalogueOfPayable();
+                                        System.out.println("Choose the number of book that u want to buy: ");
+                                        int n = sc.nextInt();
+                                        book.buyBook(n);
+                                    } else if (temp == 3) {
+                                        System.out.println("Write amount which u want to add");
+                                        float money = sc.nextFloat();
+                                        book.IWANNAMONEY(money);
+                                    } else if (temp == 4) {
+                                        Taken_books list = new Taken_books(1, 1, "1", "1", 1);
+                                        list.ShowTaken_books();
+                                        System.out.println("Write number of the book that u want to return: ");
+                                        int number = sc.nextInt();
+                                        book.returnBook(number);
+                                    } else if (temp==5) {
+                                        break;
+                                    }
                                 }
-
                             } else if (!userStatus) {
+                                while(temp!=4){
                                 System.out.println("Chose one of the options: \n" +
                                         "0.Top 10 books \n" +
                                         "1.Add free book\n" +
                                         "2.Add book with price\n" +
-                                        "3.Top up your balance");
-                                int temp = sc.nextInt();
+                                        "3.Top up your balance\n" +
+                                        "4.Exit");
+                                temp = sc.nextInt();
 
                                 if (temp == 0) {
                                     System.out.println("Here is top 10 books of our web - service: ");
@@ -214,7 +241,11 @@ public abstract class Main {
                                     float money = sc.nextFloat();
                                     book.IWANNAMONEY(money);
                                 }
+                                else if(temp==4){
+                                    break;
+                                }
                             }
+                        }
                         }
                     } catch (SQLException e) {
                         throw new RuntimeException("Oops! Something went wrong with database: " + e.getMessage());
